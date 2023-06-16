@@ -27,10 +27,11 @@ namespace JWTDemo.Controllers
             User user = new User();
             user.Username = username;
             user.Password = password;
+
             IActionResult response = Unauthorized();
 
-            var authenticatedUser = AuthenticateUser(user);
-            if (authenticatedUser != null)
+            Boolean authenticatedUser = IsUserAuthenticated(user);
+            if (authenticatedUser)
             {
                 var stringToken = GenerateJsonWebToken(user);
                 response = Ok(new { token = stringToken });
@@ -41,7 +42,7 @@ namespace JWTDemo.Controllers
 
         [Authorize]
         [HttpGet("PrivateApi")]
-        public string Post()
+        public string GetAccess()
         {
             return "This method is private";
         }
@@ -69,14 +70,13 @@ namespace JWTDemo.Controllers
             return encodedToken;
         }
 
-        private User AuthenticateUser(User login)
+        private bool IsUserAuthenticated(User login)
         {
-            User user = null;
             if (login.Username == "hungpq" && login.Password == "123")
             {
-                user = new User { Username = "hungpq", Password = "123" };
+                return true;
             }
-            return user;
+            return false;
         }
     }
 }
